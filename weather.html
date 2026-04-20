@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Weather Dashboard</h1>
+        <div>
+            <input type="text" id="locationInput" placeholder="Enter location..." />
+            <button id="searchButton">Search</button>
+        </div>
+        <div id="currentWeather">
+            <h2>Current Weather</h2>
+            <p id="currentTemp"></p>
+            <p id="currentCondition"></p>
+        </div>
+        <div id="forecast">
+            <h2>Forecast</h2>
+            <ul id="forecastList"></ul>
+        </div>
+    </div>
+    <script>
+        const apiKey = 'YOUR_API_KEY';
+
+        document.getElementById('searchButton').addEventListener('click', () => {
+            const location = document.getElementById('locationInput').value;
+            getWeather(location);
+        });
+
+        function getWeather(location) {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('currentTemp').textContent = `Temperature: ${data.main.temp} °C`;
+                    document.getElementById('currentCondition').textContent = `Condition: ${data.weather[0].description}`;
+                });
+
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${apiKey}&units=metric`)
+                .then(response => response.json())
+                .then(data => {
+                    const forecastList = document.getElementById('forecastList');
+                    forecastList.innerHTML = '';
+                    data.list.forEach(item => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${item.dt_txt}: ${item.main.temp} °C - ${item.weather[0].description}`;
+                        forecastList.appendChild(listItem);
+                    });
+                });
+        }
+    </script>
+</body>
+</html>
